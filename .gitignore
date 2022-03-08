@@ -1,0 +1,11 @@
+# OS.
+.DS_Store
+
+.idea
+
+# Vagrant.
+.vagrant/
+
+# Ansible.
+*.retry
+*/roles/*

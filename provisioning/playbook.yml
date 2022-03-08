@@ -1,0 +1,55 @@
+---
+# Ansible playbook for VIVO installation.
+
+- name: VIVO
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    # prepare instance for ansible
+    - role: robertdebock.core_dependencies
+
+    # install java jdk
+    - role: robertdebock.java
+      java_vendor: openjdk
+      java_type: jdk
+      java_version: "11"
+
+    # install solr with no initial cores
+    # but don't start it (solr is not started until vivocore is in place for discovery)
+    - role: geerlingguy.solr
+      solr_version: "8.11.1"
+      solr_cores:
+      solr_service_state: stopped
+      solr_restart_handler_enabled: false
+
+    # install tomcat
+    # and set CATALINA_OPTS="-Xms512m -Xmx512m -XX:MaxPermSize=128m"
+    # see https://wiki.lyrasis.org/display/VIVODOC112x/Installing+VIVO#InstallingVIVO-ConfigureandStartTomcat
+    - role: robertdebock.tomcat
+      tomcat_version: 9
+      java_opts:
+        - name: CATALINA_OPTS
+          value: "-Xms512m -Xmx512m -XX:MaxPermSize=128m"
+
+    # install maven
+    - role: gantsign.maven
+
+    # install VIVO
+    - role: smierz.vivo
+      # solr variables, need to match the values used in geerlingguy.solr
+      vivo_solr_home: "{{ solr_home }}/data"
+      vivo_solr_user: "{{ solr_user }}"
+      vivo_solr_group: "{{ solr_group }}"
+      vivo_solr_service_name: "{{ solr_service_name }}"
+      # tomcat variables, need to match the values used in robertdebock.tomcat
+      vivo_tomcat_user: "{{ tomcat_user }}"
+      vivo_tomcat_group: "{{ tomcat_group }}"
+      vivo_tomcat_service_name: "{{ tomcat_name }}"
+      # vivo settings
+      vivo_version: 1.12.2
+      vivo_settings_appname: vivo
+      vivo_settings_vivodir: /usr/local/vivo/home
+      vivo_settings_tomcatdir: "{{ tomcat_directory }}/{{ tomcat_name }}"
+      vivo_settings_defaulttheme: wilma
