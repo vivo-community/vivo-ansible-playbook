@@ -37,7 +37,7 @@
     - role: gantsign.maven
 
     # install VIVO
-    - role: smierz.vivo
+    - role: vivo_community.vivo
       # solr variables, need to match the values used in geerlingguy.solr
       vivo_solr_home: "{{ solr_home }}/data"
       vivo_solr_user: "{{ solr_user }}"
