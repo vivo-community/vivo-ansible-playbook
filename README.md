@@ -1,36 +1,41 @@
-# vivo-ansible-vagrant
-Provision VIVO 1.12.x to a virtual machine using Ansible and Vagrant. \
+# vivo-ansible-playbook
+Install VIVO 1.12.x and its system requirements on a (local/remote/virtual) machine using Ansible. \
 The included Ansible playbook 
-* first prepares the VM by installing the [System Requirements](https://wiki.lyrasis.org/display/VIVODOC112x/System+Requirements) described in the VIVO wiki 
+* first prepares the machine by installing the [System Requirements](https://wiki.lyrasis.org/display/VIVODOC112x/System+Requirements) described in the VIVO wiki 
 * and afterwards installs VIVO following the [Installing VIVO](https://wiki.lyrasis.org/display/VIVODOC112x/Installing+VIVO) guide.
 
-While currently the virtual machine is based on Debian 10, other OS may work as well, since Ansible is multi-platform. If you tried another OS, let us know, and we will include it in this README.
+### Why Ansible?
+Ansible is a DevOps tool for automating tasks like provisioning, configuration management, 
+and application deployment. The tasks are provided as infrastructure as code, so they are testable, 
+version controlled and can be integrated into a CI pipeline.
 
-### Prerequisites
-* [Git](https://git-scm.com/downloads)
-* [Vagrant](https://www.vagrantup.com/downloads.html)
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-
-Perform the following steps in the terminal (Linux / macOS) or GitBash (Windows).
-```
-git clone https://github.com/vivo-community/vivo-ansible-vagrant.git
-cd vivo-ansible-vagrant
-vagrant up
-```
-
-When the installation is complete (a few minutes, depending on the download speed), VIVO & Solr can be opened in the browser:
-* VIVO : http://localhost:8080/vivo/
-* Solr : http://localhost:8983
+A simple use case for using Ansible for installing VIVO would be a set-up with multiple environments like
+development, testing, production or for service providers having multiple machines for different clients.
+While syncing all machines manually would be quite laborsome, Ansible could save you time by automating it.
 
 
-### Useful Vagrant commands
-- `vagrant up`                  -- starts vagrant environment (provisions only on the first vagrant up)
-- `vagrant ssh`                 -- connects to machine via SSH
-- `vagrant provision`           -- forces re-provisioning of the vagrant machine
-- `vagrant reload`              -- restarts vagrant machine, loads new Vagrantfile configuration
-- `vagrant reload --provision`  -- restart the virtual machine and force provisioning
-- `vagrant halt`                -- stops the vagrant machine
-- `vagrant destroy`             -- stops and deletes all traces of the vagrant machine
+### Dependencies
+The playbook uses the Ansible roles listed in `provisioning/requirements.yml`.
+Each role can be configured within the playbook using the role's defaults and variables below the role name.
+To learn about each role's specific variables and defaults, please see their respective GitHub page:
+* [robertdebock.core_dependencies](https://github.com/robertdebock/ansible-role-core_dependencies) : prepare machine for ansible
+* [robertdebock.java](https://github.com/robertdebock/ansible-role-java) : install java 
+* [geerlingguy.solr](https://github.com/geerlingguy/ansible-role-solr) : install solr 
+* [robertdebock.tomcat](https://github.com/robertdebock/ansible-role-tomcat) : install tomcat
+* [gantsign.maven](https://github.com/gantsign/ansible-role-maven) : install maven
+* [vivo_community.vivo](https://github.com/vivo-community/ansible-role-vivo) : install VIVO
+
+Additional hints on how to configure [vivo_community.vivo](https://github.com/vivo-community/ansible-role-vivo) 
+can be found in the wiki:
+* [How to configure git repositories and branches for VIVO, Vitro, VIVO languages, Vitro languages](https://github.com/vivo-community/vivo-ansible-playbook/wiki/configure-git-repositories-and-branches-for-VIVO,-Vitro,-VIVO-languages,-Vitro-languages)
+* [How to overwrite VIVO settings, runtime properties, application setup](https://github.com/vivo-community/vivo-ansible-playbook/wiki/overwrite-VIVO-settings,-runtime-properties,-application-setup)
+
+
+### Testing
+Before executing the playbook on your machine, you can configure the playbook variables
+and do a test run using the provided Vagrantfile to provision the playbook to a virtual machine or docker first.
+In the wiki are some instructions to get a [test environment on your local machine](https://github.com/vivo-community/vivo-ansible-playbook/wiki/test-setup) going.
 
 ### Disclaimer
-This Vagrant setup and the accompanying Ansible playbook are intended for development and experimentation only.
+This Ansible playbook and the accompanying Vagrant setup are intended for development and experimentation only:\
+the setup and security of your servers is ultimately YOUR responsibility.
